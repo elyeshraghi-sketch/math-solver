@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl" style="height:100%">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>عرفان حیدری حل‌کنندهٔ همه‌چیز ریاضی</title>
+  <script src="https://unpkg.com/mathjs@12.4.2/lib/browser/math.js"></script>
+  <style>
+    *{box-sizing:border-box}body{font-family:Vazir,Tahoma,sans-serif;background:#f8f9ff;margin:0;padding:15px;height:100%}
+    .container{max-width:700px;margin:0 auto}header{text-align:center;padding:20px 0}
+    h1{color:#2c3e50}input{width:100%;padding:16px;font-size:18px;border:2px solid #ccc;border-radius:10px;margin:15px 0;direction:ltr;text-align:left}
+    button{background:#3498db;color:#fff;border:none;padding:14px 24px;font-size:18px;border-radius:10px;cursor:pointer;width:100%}
+    #out{background:#fff;padding:20px;border-radius:10px;margin-top:20px;min-height:60px;overflow:auto}
+    .ex{margin-top:20px;font-size:14px;color:#777}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🧠 حل‌کنندهٔ جامع ریاضی</h1>
+      <p>همه چیز از <code>2+3</code> تا <code>integrate(x^2,x)</code></p>
+    </header>
+    <input id="in" placeholder="مثال: 5^2, solve(x^2=4), plot sin(x)" value="2+3*4">
+    <button onclick="go()">⚡ حل کن</button>
+    <div id="out">نتیجه اینجا نمایش داده می‌شود...</div>
+    <div class="ex">
+      ✅ پشتیبانی از: جمع/ضرب/توان (`5^3`)، فاکتوریل (`5!`)، ریشه (`sqrt(16)`)، لگ (`log(100)`)، مثلثات (`sin(pi/2)`)، معادله (`x+2=5`)، انتگرال (`integrate(x^2,x)`)، ماتریس و...
+    </div>
+  </div>
+  <script>
+    const math = window.math;
+    function go(){
+      const q = document.getElementById('in').value.trim();
+      const out = document.getElementById('out');
+      if(!q){ out.innerHTML='❌ لطفاً عبارتی وارد کنید.'; return; }
+      try {
+        let res;
+        if(q.startsWith('plot ') || q.startsWith('graph ')){
+          out.innerHTML='⚠️ رسم نمودار در این نسخه سبک غیرفعال است. برای رسم، از نسخهٔ کامل استفاده کنید.';
+          return;
+        } else if(q.includes('=')){
+          const [l,r] = q.split('=').map(x=>x.trim());
+          const eq = `${l} - (${r})`;
+          res = math.solve(math.parse(eq), 'x');
+          res = Array.isArray(res) ? res.map(r=>r.toNumber ? r.toNumber() : r.toString()).join(', ') : res.toString();
+        } else {
+          // پیش‌پردازش: int → integrate, diff → derivative, ln → log
+          let expr = q.replace(/\bint\b/g,'integrate').replace(/\bdiff\b/g,'derivative').replace(/\bln\b/g,'log');
+          if(expr.includes('!') && !expr.includes('factorial')){
+            expr = expr.replace(/(\d+)!/g, 'factorial($1)');
+          }
+          res = math.evaluate(expr);
+        }
+        out.innerHTML = `<strong style="color:#27ae60">✅ پاسخ:</strong> <code>${math.format(res, {precision:12})}</code>`;
+      } catch(e){
+        out.innerHTML = `❌ خطا: ${e.message || 'عبارت نامعتبر است.'}`;
+      }
+    }
+    window.onload = go;
+  </script>
+</body>
+</html>
