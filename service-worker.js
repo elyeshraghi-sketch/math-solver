@@ -1,9 +1,8 @@
 const CACHE_NAME = 'riazinema-v1';
 const urlsToCache = [
   '/',
-  '/index.html',
-  '/style.css',
-  '/script.js'
+  'index.html',
+  'manifest.json'
 ];
 
 self.addEventListener('install', event => {
